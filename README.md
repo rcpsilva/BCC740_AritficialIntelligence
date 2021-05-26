@@ -1,2 +1,2 @@
-# BCC740_AritficialIntelligence
+# BCC740_ArtificialIntelligence
  
