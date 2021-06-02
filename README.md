@@ -6,17 +6,16 @@ This repository contains the base source files for the BCC740-Artificial Intelli
 
 * [Requirements](#requirements)
 * [Files](#files)
-    * Week 1
+    * Application 1
         * [Definitions](#defintions)
-    * Week 2
         * [Room](#room)
         * [Path Finder Agents](#room)
         * [Path Finder Tester](#room)
-    * Week 3
+    * Application 2 
         * [Sudoku](#sudoku)
         * [Sudoku Agent](#sudoku)
         * [Sudoku Simulation](#sudoku)
-    * Week 4
+    * Application 3
         * [Logical Agents](#LogicalAgents)
 
 ## Requirements
