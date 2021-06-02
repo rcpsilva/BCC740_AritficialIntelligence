@@ -84,7 +84,7 @@ if __name__ == "__main__":
     prices2 = []
     spendings2 = []
 
-    for i in range(100):
+    for i in range(1000):
         prices1.append(env1.price)
         n_prev = env1.nTP
         ag1.act()
