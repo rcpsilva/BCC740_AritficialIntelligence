@@ -35,8 +35,7 @@ class RandAgent(Agent):
 
         # Select a path from the frontier
         path = self.frontier.pop(0)
-        
-        
+  
         # Visit the last node in the path
         action = {'visit_position': path[-1], 'path': path} 
         # The agente sends a position and the full path to the environment, the environment can plot the path in the room 
@@ -65,6 +64,102 @@ class RandAgent(Agent):
             self.act()
         print(self.percepts['current_position'])
 
+class BFSAgent(RandAgent):
+
+    def __init__(self, env, bound=100):
+        RandAgent.__init__(self, env, bound)
+
+        self.costs = [0]
+
+    def act(self):
+        """Implements the agent action
+        """
+
+        # Select a path from the frontier
+        path = self.frontier.pop(0)
+        
+  
+        # Visit the last node in the path
+        action = {'visit_position': path[-1], 'path': path} 
+        # The agente sends a position and the full path to the environment, the environment can plot the path in the room 
+        self.percepts = self.env.signal(action)
+
+        # Add visited node
+        self.visited.append(path[-1])
+
+        # From the list of viable neighbors given by the environment
+        # Select a random neighbor that has not been visited yet
+            
+        viable_neighbors =  self.percepts['neighbors']
+
+        # If the agent is not stuck
+        if viable_neighbors:              
+            for n in viable_neighbors:
+                # Append neighbor to the path and add it to the frontier
+                
+                # Cycle prunnnig
+                cycle = False
+                for e in path:
+                    if (n == e).all():
+                        cycle = True
+                        break
+
+                # Multiple path prunning
+                visited = False
+                for e in self.visited:
+                    if (n == e).all():
+                        cycle = True
+                        break                        
+
+                if not cycle and not visited:
+                    self.frontier = self.frontier + [path + [n]] 
+
+class DFSAgent(RandAgent):
+
+    def __init__(self, env, bound=100):
+        RandAgent.__init__(self, env, bound)
+
+    def act(self):
+        """Implements the agent action
+        """
+
+        # Select a path from the frontier
+        path = self.frontier.pop(0)
+  
+        # Visit the last node in the path
+        action = {'visit_position': path[-1], 'path': path} 
+        # The agente sends a position and the full path to the environment, the environment can plot the path in the room 
+        self.percepts = self.env.signal(action)
+
+        # Add visited node
+        self.visited.append(path[-1])
+
+        # From the list of viable neighbors given by the environment
+        # Select a random neighbor that has not been visited yet
+            
+        viable_neighbors =  self.percepts['neighbors']
+
+        # If the agent is not stuck
+        if viable_neighbors:              
+            for n in viable_neighbors:
+                # Append neighbor to the path and add it to the frontier
+                
+                # Cycle prunnnig
+                cycle = False
+                for e in path:
+                    if (n == e).all():
+                        cycle = True
+                        break
+
+                # Multiple path prunning
+                visited = False
+                for e in self.visited:
+                    if (n == e).all():
+                        cycle = True
+                        break                        
+
+                if not cycle and not visited:
+                    self.frontier = [path + [n]] + self.frontier
 
 class BBAgent(Agent):
     """
@@ -90,7 +185,7 @@ class BBAgent(Agent):
         self.frontier = [[self.percepts['current_position']]]
         self.cost = [0]
         self.bound = bound
-        self.path_path = []
+        self.best_path = []
         
         # Initializes list of visited nodes for multiple path prunning
         self.visited = []
@@ -137,7 +232,7 @@ class BBAgent(Agent):
             self.act()
         print(self.percepts['current_position'])
 
-        for i in range(1000):
-            action = {'visit_position': self.best_path[-1], 'path': self.best_path} 
+        #for i in range(1000):
+        #    action = {'visit_position': self.best_path[-1], 'path': self.best_path} 
             # The agente sends a position and the full path to the environment, the environment can plot the path in the room 
-            self.percepts = self.env.signal(action)
+        #    self.percepts = self.env.signal(action)
