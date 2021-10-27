@@ -1,65 +1,58 @@
 import copy as cp
 
-def gac(N, C, to_do):
+def gac(nodes, consts):
     
+    to_do = [{'var':v, 'cons':c} for c in consts for v in c['scope']]
+    gac2(nodes,consts,to_do)
+
+
+def gac2(nodes, consts, to_do):
+
     while to_do:
-        edge = to_do.pop(0)
-        main_var = edge['var']
-        remain_vars =  cp.copy(edge['constraint']['scope'])
-        remain_vars.remove(main_var)
+        arc = to_do.pop(0)
+        X = arc['var']
+        Ys = cp.copy(arc['cons']['scope']) 
+        Ys.remove(X)
+        cons = arc['cons']
 
-        domain = cp.copy(N[main_var])
-        
-        new_domain = []
+        ND = []
+        Dx = cp.copy(nodes[X])
 
-        while domain:
-            m_val = domain.pop(0)
+        while Dx:
 
-            for r_var in remain_vars:
-                
-                if m_val in new_domain:
+            x_val = Dx.pop(0)
+
+            for Yi in Ys:
+                if x_val in ND:
                     break
-
-                for r_val in N[r_var]:
-                    if edge['constraint']['c'](**{main_var:m_val ,r_var:r_val}):
-                        new_domain.append(m_val)
+                for y_val in nodes[Yi]:
+                    if cons['cons'](**{X:x_val,Yi:y_val}):
+                        ND.append(x_val)
                         break
 
-
-        if N[main_var] != new_domain:
-            N[main_var] = cp.copy(new_domain)
-            c_name = edge['constraint']['c_name']
-            for v in remain_vars: 
-                for c in C:
-                    if c['c_name'] != c_name and v in c['scope']:
-                        for _v in c['scope']:
-                            if _v != v:
-                                to_do.append({'var':_v, 'constraint':c})
+        if ND != Dx:
+            nodes[X] = cp.copy(ND)
+            for c_prime in consts:
+                if c_prime['name'] != cons['name'] and X in c_prime['scope']:
+                    for Z in c_prime['scope']:
+                        if Z != X:
+                            to_do.append({'var':Z, 'cons':c_prime})
 
 if __name__ == "__main__":
-    variables = ['A','B','C']
-
-    nodes = {'A':[1,2,3,4],
-     'B':[1,2,3,4],
-     'C':[1,2,3,4],
-     'D':[1,2,3,4],
-     'E':[1,2,3,4]}
-
-    consts = [{'c_name':'C1', 'scope':['A','B'], 'c': lambda A,B : A > B},
-        {'c_name':'C2', 'scope':['B','C'], 'c': lambda B,C : B == C},
-        {'c_name':'C3', 'scope':['E','B'], 'c': lambda E,B : E > B},
-        {'c_name':'C4', 'scope':['E','A'], 'c': lambda E,A : E < A}]
-
-    to_do = [ {'var':v, 'constraint':c} for c in consts for v in c['scope']]
-
-    for td in to_do:
-        print(td)
     
-    gac(nodes, consts, to_do)
+    nodes = {'A':[1,2,3,4],
+            'B':[1,2,3,4],
+            'C':[1,2,3,4],
+            'D':[1,2,3,4]}
+
+    consts = [{'name':'C1', 'scope':['A','B'], 'cons': lambda A,B : A > B },
+             {'name':'C2','scope':['B','C'], 'cons': lambda B,C : B > C },
+             {'name':'C3','scope':['C','D'], 'cons': lambda C,D : C == D }]
 
     for n in nodes:
         print('{} : {}'.format(n,nodes[n]))
 
+    gac(nodes,consts)
 
-
-    
+    for n in nodes:
+        print('{} : {}'.format(n,nodes[n]))
